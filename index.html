@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>数学公式背诵助手</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📐</text></svg>">
+    <!-- KaTeX CSS - 将被缓存供离线使用 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 50%, #faf5ff 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        /* Utility Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .flex-1 { flex: 1; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .grid { display: grid; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-5xl { font-size: 3rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-medium { font-weight: 500; }
+        .font-bold { font-weight: 700; }
+        .text-white { color: white; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-blue-500 { color: #3b82f6; }
+        .text-blue-600 { color: #2563eb; }
+        .text-green-600 { color: #16a34a; }
+        .text-red-500 { color: #ef4444; }
+        .text-red-600 { color: #dc2626; }
+        .text-purple-600 { color: #9333ea; }
+        .bg-white { background-color: white; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-100 { background-color: #f3f4f6; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-blue-100 { background-color: #dbeafe; }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-green-50 { background-color: #f0fdf4; }
+        .bg-green-100 { background-color: #dcfce7; }
+        .bg-purple-50 { background-color: #faf5ff; }
+        .bg-purple-100 { background-color: #f3e8ff; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-10 { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+        .pb-2 { padding-bottom: 0.5rem; }
+        .pb-20 { padding-bottom: 5rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mr-1 { margin-right: 0.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-10 { width: 2.5rem; }
+        .w-full { width: 100%; }
+        .h-6 { height: 1.5rem; }
+        .h-20 { height: 5rem; }
+        .min-h-screen { min-height: 100vh; }
+        .max-w-md { max-width: 28rem; }
+        .overflow-x-auto { overflow-x: auto; }
+        .overflow-y-auto { overflow-y: auto; }
+        .whitespace-nowrap { white-space: nowrap; }
+        .border { border: 1px solid #e5e7eb; }
+        .border-b { border-bottom: 1px solid #e5e7eb; }
+        .border-2 { border-width: 2px; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .border-blue-500 { border-color: #3b82f6; }
+        .outline-none { outline: none; }
+        .cursor-pointer { cursor: pointer; }
+        .hidden { display: none; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .z-50 { z-index: 50; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+
+        /* Custom Styles */
+        .page { display: none; min-height: 100vh; }
+        .page.active { display: block; }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .formula-display {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-primary:active { transform: scale(0.95); }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-secondary:active { transform: scale(0.95); }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.4);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-success:active { transform: scale(0.95); }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.4);
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .btn-danger:active { transform: scale(0.95); }
+
+        .symbol-btn {
+            background: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            min-width: 40px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+        .symbol-btn:active { background: #d1d5db; }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .category-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .category-btn:not(.active) {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+        }
+
+        .ring-2 {
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        select, textarea, input[type="text"] {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            font-size: 1rem;
+            outline: none;
+        }
+        select:focus, textarea:focus, input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+
+        /* KaTeX 样式调整 */
+        .katex { font-size: 1.3em !important; }
+
+        /* 离线提示 */
+        .offline-banner {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .offline-banner.show { display: block; }
+
+        /* PWA 安装提示 */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        .install-prompt.show { display: block; }
+    </style>
+</head>
+<body>
+    <!-- 离线提示 -->
+    <div id="offlineBanner" class="offline-banner">
+        📴 当前处于离线模式
+    </div>
+
+    <!-- 主页 -->
+    <div id="homePage" class="page active p-4 pb-20">
+        <div class="text-center py-8">
+            <div class="text-5xl mb-3">📐</div>
+            <h1 class="text-2xl font-bold text-gray-800">数学公式背诵助手</h1>
+            <p class="text-gray-500 mt-2">高效记忆，轻松掌握</p>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mt-6">
+            <div onclick="showPage('bankPage')" class="card cursor-pointer">
+                <div class="text-3xl mb-2">📚</div>
+                <h3 class="font-bold text-gray-800">题库管理</h3>
+                <p class="text-sm text-gray-500 mt-1">管理所有公式</p>
+            </div>
+            <div onclick="showPage('setPage')" class="card cursor-pointer">
+                <div class="text-3xl mb-2">📁</div>
+                <h3 class="font-bold text-gray-800">题集管理</h3>
+                <p class="text-sm text-gray-500 mt-1">创建自定义题集</p>
+            </div>
+            <div onclick="showPage('memorizeSelectPage')" class="card cursor-pointer">
+                <div class="text-3xl mb-2">🧠</div>
+                <h3 class="font-bold text-gray-800">背记模式</h3>
+                <p class="text-sm text-gray-500 mt-1">系统化记忆</p>
+            </div>
+            <div onclick="showPage('practiceSelectPage')" class="card cursor-pointer">
+                <div class="text-3xl mb-2">✏️</div>
+                <h3 class="font-bold text-gray-800">练习模式</h3>
+                <p class="text-sm text-gray-500 mt-1">无限循环练习</p>
+            </div>
+        </div>
+
+        <div class="card mt-6">
+            <h3 class="font-bold text-gray-800 mb-3">📊 学习统计</h3>
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-blue-50 rounded-xl p-3">
+                    <div id="statFormulas" class="text-2xl font-bold text-blue-600">0</div>
+                    <div class="text-xs text-gray-500">总公式数</div>
+                </div>
+                <div class="bg-green-50 rounded-xl p-3">
+                    <div id="statSets" class="text-2xl font-bold text-green-600">0</div>
+                    <div class="text-xs text-gray-500">题集数</div>
+                </div>
+                <div class="bg-purple-50 rounded-xl p-3">
+                    <div id="statSessions" class="text-2xl font-bold text-purple-600">0</div>
+                    <div class="text-xs text-gray-500">背记次数</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="flex items-center gap-2 text-green-600">
+                <span>✅</span>
+                <span class="text-sm">支持离线使用</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 题库管理页 -->
+    <div id="bankPage" class="page p-4 pb-20">
+        <div class="flex items-center justify-between mb-4">
+            <button onclick="showPage('homePage')" class="text-blue-600 flex items-center">
+                <span class="text-xl mr-1">←</span> 返回
+            </button>
+            <h2 class="text-xl font-bold">题库管理</h2>
+            <button onclick="showAddFormula()" class="text-blue-600 text-2xl">+</button>
+        </div>
+        
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <button onclick="filterCategory('all')" class="category-btn active" data-cat="all">全部</button>
+            <button onclick="filterCategory('derivative')" class="category-btn" data-cat="derivative">求导公式</button>
+            <button onclick="filterCategory('integral')" class="category-btn" data-cat="integral">积分公式</button>
+            <button onclick="filterCategory('custom')" class="category-btn" data-cat="custom">自定义</button>
+        </div>
+
+        <div id="formulaList" class="space-y-3"></div>
+    </div>
+
+    <!-- 添加/编辑公式弹窗 -->
+    <div id="formulaModal" class="fixed inset-0 modal-overlay z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md" style="max-height: 90vh; overflow-y: auto;">
+            <div class="p-5">
+                <h3 id="modalTitle" class="text-xl font-bold mb-4">添加公式</h3>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">分类</label>
+                    <select id="formulaCategory">
+                        <option value="derivative">求导公式</option>
+                        <option value="integral">积分公式</option>
+                        <option value="custom">自定义</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">公式左边 (等号前)</label>
+                    <textarea id="formulaLeft" class="h-20" placeholder="例如: \frac{d}{dx}(x^n)"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">公式右边 (等号后)</label>
+                    <textarea id="formulaRight" class="h-20" placeholder="例如: nx^{n-1}"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">常用符号</label>
+                    <div class="grid grid-cols-6 gap-2">
+                        <button onclick="insertSymbol('\\frac{}{}')" class="symbol-btn">½</button>
+                        <button onclick="insertSymbol('^{}')" class="symbol-btn">x²</button>
+                        <button onclick="insertSymbol('_{}')" class="symbol-btn">x₂</button>
+                        <button onclick="insertSymbol('\\sqrt{}')" class="symbol-btn">√</button>
+                        <button onclick="insertSymbol('\\int')" class="symbol-btn">∫</button>
+                        <button onclick="insertSymbol('\\sum')" class="symbol-btn">Σ</button>
+                        <button onclick="insertSymbol('\\pi')" class="symbol-btn">π</button>
+                        <button onclick="insertSymbol('\\alpha')" class="symbol-btn">α</button>
+                        <button onclick="insertSymbol('\\beta')" class="symbol-btn">β</button>
+                        <button onclick="insertSymbol('\\theta')" class="symbol-btn">θ</button>
+                        <button onclick="insertSymbol('\\infty')" class="symbol-btn">∞</button>
+                        <button onclick="insertSymbol('\\pm')" class="symbol-btn">±</button>
+                        <button onclick="insertSymbol('\\sin')" class="symbol-btn">sin</button>
+                        <button onclick="insertSymbol('\\cos')" class="symbol-btn">cos</button>
+                        <button onclick="insertSymbol('\\tan')" class="symbol-btn">tan</button>
+                        <button onclick="insertSymbol('\\ln')" class="symbol-btn">ln</button>
+                        <button onclick="insertSymbol('\\log')" class="symbol-btn">log</button>
+                        <button onclick="insertSymbol('e^{}')" class="symbol-btn">eˣ</button>
+                        <button onclick="insertSymbol('\\lim')" class="symbol-btn">lim</button>
+                        <button onclick="insertSymbol('\\to')" class="symbol-btn">→</button>
+                        <button onclick="insertSymbol('\\cdot')" class="symbol-btn">·</button>
+                        <button onclick="insertSymbol('\\times')" class="symbol-btn">×</button>
+                        <button onclick="insertSymbol('\\div')" class="symbol-btn">÷</button>
+                        <button onclick="insertSymbol('\\neq')" class="symbol-btn">≠</button>
+                    </div>
+                </div>
+
+                <div class="mb-4 p-4 bg-gray-50 rounded-xl">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">预览</label>
+                    <div id="formulaPreview" class="formula-display text-xl"></div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="closeFormulaModal()" class="flex-1 btn-secondary">取消</button>
+                    <button onclick="saveFormula()" class="flex-1 btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 题集管理页 -->
+    <div id="setPage" class="page p-4 pb-20">
+        <div class="flex items-center justify-between mb-4">
+            <button onclick="showPage('homePage')" class="text-blue-600 flex items-center">
+                <span class="text-xl mr-1">←</span> 返回
+            </button>
+            <h2 class="text-xl font-bold">题集管理</h2>
+            <button onclick="showCreateSet()" class="text-blue-600 text-2xl">+</button>
+        </div>
+        
+        <div id="setList" class="space-y-3"></div>
+    </div>
+
+    <!-- 创建题集页 -->
+    <div id="createSetPage" class="page p-4 pb-20">
+        <div class="flex items-center justify-between mb-4">
+            <button onclick="showPage('setPage')" class="text-blue-600 flex items-center">
+                <span class="text-xl mr-1">←</span> 返回
+            </button>
+            <h2 class="text-xl font-bold">创建题集</h2>
+            <button onclick="saveSet()" class="text-blue-600 font-medium">保存</button>
+        </div>
+
+        <div class="card">
+            <input id="setName" type="text" placeholder="输入题集名称" style="border: none; border-bottom: 1px solid #e5e7eb; border-radius: 0; padding: 0.5rem 0; font-size: 1.125rem; font-weight: 500;">
+            <p class="text-sm text-gray-500 mt-2">已选择 <span id="selectedCount">0</span> 个公式</p>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+            <button onclick="selectAllFormulas()" class="text-sm bg-blue-100 text-blue-600 px-3 py-1 rounded-full border-none cursor-pointer">全选</button>
+            <button onclick="deselectAllFormulas()" class="text-sm bg-gray-100 text-gray-600 px-3 py-1 rounded-full border-none cursor-pointer">取消全选</button>
+        </div>
+
+        <div id="formulaSelectList" class="space-y-3"></div>
+    </div>
+
+    <!-- 背记模式选择页 -->
+    <div id="memorizeSelectPage" class="page p-4 pb-20">
+        <div class="flex items-center justify-between mb-4">
+            <button onclick="showPage('homePage')" class="text-blue-600 flex items-center">
+                <span class="text-xl mr-1">←</span> 返回
+            </button>
+            <h2 class="text-xl font-bold">选择题集</h2>
+            <div class="w-10"></div>
+        </div>
+        
+        <p class="text-gray-500 mb-4">选择一个题集开始背记</p>
+        <div id="memorizeSetList" class="space-y-3"></div>
+    </div>
+
+    <!-- 背记模式页 -->
+    <div id="memorizePage" class="page min-h-screen flex flex-col">
+        <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+            <button onclick="exitMemorize()" class="text-red-500 font-medium">退出</button>
+            <div class="text-center">
+                <div class="text-sm text-gray-500">进度</div>
+                <div id="memorizeProgress" class="font-bold">0/0</div>
+            </div>
+            <div class="text-center">
+                <div class="text-sm text-gray-500">不记得</div>
+                <div id="memorizeWrong" class="font-bold text-red-500">0</div>
+            </div>
+        </div>
+        
+        <div id="memorizeArea" class="flex-1 flex flex-col items-center justify-center p-6" onclick="handleMemorizeClick()">
+            <div class="card w-full max-w-md">
+                <div id="memorizeFormula" class="formula-display text-2xl" style="min-height: 150px;"></div>
+            </div>
+            <p id="memorizeHint" class="text-gray-400 mt-4">点击屏幕查看答案</p>
+        </div>
+
+        <div id="memorizeButtons" class="hidden p-4 bg-white shadow-lg">
+            <div class="flex gap-4">
+                <button onclick="memorizeAnswer(false)" class="flex-1 btn-danger py-4 text-lg">😕 不记得</button>
+                <button onclick="memorizeAnswer(true)" class="flex-1 btn-success py-4 text-lg">😊 记得</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 背记结果页 -->
+    <div id="memorizeResultPage" class="page p-4 pb-20">
+        <div class="text-center py-8">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-2xl font-bold text-gray-800">背记完成！</h2>
+        </div>
+
+        <div class="card">
+            <h3 class="font-bold text-gray-800 mb-4">📊 本次统计</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-blue-50 rounded-xl p-4 text-center">
+                    <div id="resultTotal" class="text-3xl font-bold text-blue-600">0</div>
+                    <div class="text-sm text-gray-500">总公式数</div>
+                </div>
+                <div class="bg-green-50 rounded-xl p-4 text-center">
+                    <div id="resultRepeats" class="text-3xl font-bold text-green-600">0</div>
+                    <div class="text-sm text-gray-500">重复次数</div>
+                </div>
+                <div class="bg-red-50 rounded-xl p-4 text-center">
+                    <div id="resultWrong" class="text-3xl font-bold text-red-600">0</div>
+                    <div class="text-sm text-gray-500">不记得次数</div>
+                </div>
+                <div class="bg-purple-50 rounded-xl p-4 text-center">
+                    <div id="resultAccuracy" class="text-3xl font-bold text-purple-600">0%</div>
+                    <div class="text-sm text-gray-500">正确率</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="wrongFormulasList" class="card hidden">
+            <h3 class="font-bold text-gray-800 mb-4">❌ 不记得的公式</h3>
+            <div id="wrongFormulas" class="space-y-3"></div>
+        </div>
+
+        <button onclick="showPage('homePage')" class="w-full btn-primary mt-6 py-4 text-lg">返回首页</button>
+    </div>
+
+    <!-- 练习模式选择页 -->
+    <div id="practiceSelectPage" class="page p-4 pb-20">
+        <div class="flex items-center justify-between mb-4">
+            <button onclick="showPage('homePage')" class="text-blue-600 flex items-center">
+                <span class="text-xl mr-1">←</span> 返回
+            </button>
+            <h2 class="text-xl font-bold">选择题集</h2>
+            <div class="w-10"></div>
+        </div>
+        
+        <p class="text-gray-500 mb-4">选择一个题集开始练习</p>
+        <div id="practiceSetList" class="space-y-3"></div>
+    </div>
+
+    <!-- 练习模式页 -->
+    <div id="practicePage" class="page min-h-screen flex flex-col">
+        <div class="bg-white shadow-sm p-4 flex justify-between items-center">
+            <button onclick="exitPractice()" class="btn-danger text-sm px-4 py-2">退出练习</button>
+            <div class="text-center">
+                <div class="text-sm text-gray-500">已练习</div>
+                <div id="practiceCount" class="font-bold">0</div>
+            </div>
+        </div>
+        
+        <div id="practiceArea" class="flex-1 flex flex-col items-center justify-center p-6" onclick="handlePracticeClick()">
+            <div class="card w-full max-w-md">
+                <div id="practiceFormula" class="formula-display text-2xl" style="min-height: 150px;"></div>
+            </div>
+            <p id="practiceHint" class="text-gray-400 mt-4">点击屏幕查看答案</p>
+        </div>
+    </div>
+
+    <!-- KaTeX JS - 将被缓存供离线使用 -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <script>
+        // 数据存储
+        let formulas = [];
+        let sets = [];
+        let stats = { sessions: 0 };
+        let currentEditId = null;
+        let currentEditSetId = null;
+        let selectedFormulas = new Set();
+        let lastFocusedInput = null;
+
+        // 背记模式状态
+        let memorizeState = {
+            formulas: [],
+            queue: [],
+            current: null,
+            showingAnswer: false,
+            wrongCount: 0,
+            wrongFormulas: {},
+            totalShown: 0
+        };
+
+        // 练习模式状态
+        let practiceState = {
+            formulas: [],
+            current: null,
+            showingAnswer: false,
+            count: 0
+        };
+
+        // 默认公式库
+        const defaultFormulas = [
+            // 基本求导公式
+            { id: 1, category: 'derivative', left: "(c)'", right: "0", builtin: true },
+            { id: 2, category: 'derivative', left: "(x^n)'", right: "nx^{n-1}", builtin: true },
+            { id: 3, category: 'derivative', left: "(\\sin x)'", right: "\\cos x", builtin: true },
+            { id: 4, category: 'derivative', left: "(\\cos x)'", right: "-\\sin x", builtin: true },
+            { id: 5, category: 'derivative', left: "(\\tan x)'", right: "\\sec^2 x", builtin: true },
+            { id: 6, category: 'derivative', left: "(\\cot x)'", right: "-\\csc^2 x", builtin: true },
+            { id: 7, category: 'derivative', left: "(\\sec x)'", right: "\\sec x \\tan x", builtin: true },
+            { id: 8, category: 'derivative', left: "(\\csc x)'", right: "-\\csc x \\cot x", builtin: true },
+            { id: 9, category: 'derivative', left: "(a^x)'", right: "a^x \\ln a", builtin: true },
+            { id: 10, category: 'derivative', left: "(e^x)'", right: "e^x", builtin: true },
+            { id: 11, category: 'derivative', left: "(\\log_a x)'", right: "\\frac{1}{x \\ln a}", builtin: true },
+            { id: 12, category: 'derivative', left: "(\\ln x)'", right: "\\frac{1}{x}", builtin: true },
+            { id: 13, category: 'derivative', left: "(\\arcsin x)'", right: "\\frac{1}{\\sqrt{1-x^2}}", builtin: true },
+            { id: 14, category: 'derivative', left: "(\\arccos x)'", right: "-\\frac{1}{\\sqrt{1-x^2}}", builtin: true },
+            { id: 15, category: 'derivative', left: "(\\arctan x)'", right: "\\frac{1}{1+x^2}", builtin: true },
+            { id: 16, category: 'derivative', left: "(\\text{arccot}\\ x)'", right: "-\\frac{1}{1+x^2}", builtin: true },
+            // 基本积分公式
+            { id: 17, category: 'integral', left: "\\int k\\,dx", right: "kx + C", builtin: true },
+            { id: 18, category: 'integral', left: "\\int x^n\\,dx", right: "\\frac{x^{n+1}}{n+1} + C\\ (n \\neq -1)", builtin: true },
+            { id: 19, category: 'integral', left: "\\int \\frac{1}{x}\\,dx", right: "\\ln|x| + C", builtin: true },
+            { id: 20, category: 'integral', left: "\\int e^x\\,dx", right: "e^x + C", builtin: true },
+            { id: 21, category: 'integral', left: "\\int a^x\\,dx", right: "\\frac{a^x}{\\ln a} + C", builtin: true },
+            { id: 22, category: 'integral', left: "\\int \\sin x\\,dx", right: "-\\cos x + C", builtin: true },
+            { id: 23, category: 'integral', left: "\\int \\cos x\\,dx", right: "\\sin x + C", builtin: true },
+            { id: 24, category: 'integral', left: "\\int \\tan x\\,dx", right: "-\\ln|\\cos x| + C", builtin: true },
+            { id: 25, category: 'integral', left: "\\int \\cot x\\,dx", right: "\\ln|\\sin x| + C", builtin: true },
+            { id: 26, category: 'integral', left: "\\int \\sec^2 x\\,dx", right: "\\tan x + C", builtin: true },
+            { id: 27, category: 'integral', left: "\\int \\csc^2 x\\,dx", right: "-\\cot x + C", builtin: true },
+            { id: 28, category: 'integral', left: "\\int \\sec x \\tan x\\,dx", right: "\\sec x + C", builtin: true },
+            { id: 29, category: 'integral', left: "\\int \\csc x \\cot x\\,dx", right: "-\\csc x + C", builtin: true },
+            { id: 30, category: 'integral', left: "\\int \\frac{1}{\\sqrt{1-x^2}}\\,dx", right: "\\arcsin x + C", builtin: true },
+            { id: 31, category: 'integral', left: "\\int \\frac{1}{1+x^2}\\,dx", right: "\\arctan x + C", builtin: true },
+            { id: 32, category: 'integral', left: "\\int \\frac{1}{\\sqrt{x^2+a^2}}\\,dx", right: "\\ln(x+\\sqrt{x^2+a^2}) + C", builtin: true },
+            { id: 33, category: 'integral', left: "\\int \\frac{1}{\\sqrt{x^2-a^2}}\\,dx", right: "\\ln|x+\\sqrt{x^2-a^2}| + C", builtin: true },
+        ];
+
+        // 初始化
+        function init() {
+            loadData();
+            if (formulas.length === 0) {
+                formulas = [...defaultFormulas];
+                saveData();
+            }
+            updateStats();
+            renderFormulaList();
+            renderSetList();
+            
+            // 注册 Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker 注册成功'))
+                    .catch(err => console.log('Service Worker 注册失败:', err));
+            }
+
+            // 监听离线/在线状态
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+        }
+
+        function updateOnlineStatus() {
+            const banner = document.getElementById('offlineBanner');
+            if (navigator.onLine) {
+                banner.classList.remove('show');
+            } else {
+                banner.classList.add('show');
+            }
+        }
+
+        // 数据持久化
+        function loadData() {
+            try {
+                const savedFormulas = localStorage.getItem('mathFormulas');
+                const savedSets = localStorage.getItem('mathSets');
+                const savedStats = localStorage.getItem('mathStats');
+                if (savedFormulas) formulas = JSON.parse(savedFormulas);
+                if (savedSets) sets = JSON.parse(savedSets);
+                if (savedStats) stats = JSON.parse(savedStats);
+            } catch (e) {
+                console.error('加载数据失败:', e);
+            }
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('mathFormulas', JSON.stringify(formulas));
+                localStorage.setItem('mathSets', JSON.stringify(sets));
+                localStorage.setItem('mathStats', JSON.stringify(stats));
+            } catch (e) {
+                console.error('保存数据失败:', e);
+            }
+        }
+
+        // 页面切换
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if (pageId === 'homePage') updateStats();
+            if (pageId === 'bankPage') renderFormulaList();
+            if (pageId === 'setPage') renderSetList();
+            if (pageId === 'memorizeSelectPage' || pageId === 'practiceSelectPage') {
+                renderModeSetList(pageId === 'memorizeSelectPage' ? 'memorizeSetList' : 'practiceSetList', 
+                                  pageId === 'memorizeSelectPage' ? 'memorize' : 'practice');
+            }
+        }
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('statFormulas').textContent = formulas.length;
+            document.getElementById('statSets').textContent = sets.length;
+            document.getElementById('statSessions').textContent = stats.sessions;
+        }
+
+        // 使用 KaTeX 渲染公式
+        function renderMath(element) {
+            if (typeof katex === 'undefined') {
+                // 如果 KaTeX 还没加载完成，等待后重试
+                setTimeout(() => renderMath(element), 100);
+                return;
+            }
+            
+            const mathElements = element.querySelectorAll('.formula-display, .formula-item');
+            mathElements.forEach(el => {
+                const text = el.textContent || el.innerText;
+                if (text.includes('$')) {
+                    const parts = text.split('$');
+                    let html = '';
+                    for (let i = 0; i < parts.length; i++) {
+                        if (i % 2 === 1) {
+                            try {
+                                html += katex.renderToString(parts[i], { throwOnError: false });
+                            } catch (e) {
+                                html += parts[i];
+                            }
+                        } else {
+                            html += parts[i];
+                        }
+                    }
+                    el.innerHTML = html;
+                }
+            });
+        }
+
+        function renderSingleFormula(latex) {
+            if (typeof katex === 'undefined') return latex;
+            try {
+                return katex.renderToString(latex, { throwOnError: false, displayMode: true });
+            } catch (e) {
+                return latex;
+            }
+        }
+
+        // 题库管理
+        let currentCategory = 'all';
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            renderFormulaList();
+        }
+
+        function renderFormulaList() {
+            const list = document.getElementById('formulaList');
+            const filtered = currentCategory === 'all' ? formulas : formulas.filter(f => f.category === currentCategory);
+            
+            list.innerHTML = filtered.map(f => `
+                <div class="card fade-in">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs px-2 py-1 rounded-full ${getCategoryClass(f.category)}">${getCategoryName(f.category)}</span>
+                        <div class="flex gap-2">
+                            <button onclick="editFormula(${f.id})" class="text-blue-500 text-sm" style="border:none;background:none;cursor:pointer;">编辑</button>
+                            <button onclick="deleteFormula(${f.id})" class="text-red-500 text-sm" style="border:none;background:none;cursor:pointer;">删除</button>
+                        </div>
+                    </div>
+                    <div class="formula-display text-lg">$${f.left} = ${f.right}$</div>
+                </div>
+            `).join('');
+            
+            renderMath(list);
+        }
+
+        function getCategoryName(cat) {
+            const names = { derivative: '求导', integral: '积分', custom: '自定义' };
+            return names[cat] || cat;
+        }
+
+        function getCategoryClass(cat) {
+            const classes = { 
+                derivative: 'bg-blue-100 text-blue-600',
+                integral: 'bg-green-100 text-green-600',
+                custom: 'bg-purple-100 text-purple-600'
+            };
+            return classes[cat] || 'bg-gray-100 text-gray-700';
+        }
+
+        function showAddFormula() {
+            currentEditId = null;
+            document.getElementById('modalTitle').textContent = '添加公式';
+            document.getElementById('formulaCategory').value = 'custom';
+            document.getElementById('formulaLeft').value = '';
+            document.getElementById('formulaRight').value = '';
+            document.getElementById('formulaPreview').innerHTML = '';
+            document.getElementById('formulaModal').classList.remove('hidden');
+            document.getElementById('formulaModal').style.display = 'flex';
+        }
+
+        function editFormula(id) {
+            const formula = formulas.find(f => f.id === id);
+            if (!formula) return;
+            
+            currentEditId = id;
+            document.getElementById('modalTitle').textContent = '编辑公式';
+            document.getElementById('formulaCategory').value = formula.category;
+            document.getElementById('formulaLeft').value = formula.left;
+            document.getElementById('formulaRight').value = formula.right;
+            updatePreview();
+            document.getElementById('formulaModal').classList.remove('hidden');
+            document.getElementById('formulaModal').style.display = 'flex';
+        }
+
+        function closeFormulaModal() {
+            document.getElementById('formulaModal').classList.add('hidden');
+            document.getElementById('formulaModal').style.display = 'none';
+        }
+
+        function saveFormula() {
+            const category = document.getElementById('formulaCategory').value;
+            const left = document.getElementById('formulaLeft').value.trim();
+            const right = document.getElementById('formulaRight').value.trim();
+            
+            if (!left || !right) {
+                alert('请填写完整的公式');
+                return;
+            }
+
+            if (currentEditId) {
+                const formula = formulas.find(f => f.id === currentEditId);
+                if (formula) {
+                    formula.category = category;
+                    formula.left = left;
+                    formula.right = right;
+                }
+            } else {
+                const newId = Math.max(0, ...formulas.map(f => f.id)) + 1;
+                formulas.push({ id: newId, category, left, right, builtin: false });
+            }
+
+            saveData();
+            closeFormulaModal();
+            renderFormulaList();
+        }
+
+        function deleteFormula(id) {
+            if (confirm('确定要删除这个公式吗？')) {
+                formulas = formulas.filter(f => f.id !== id);
+                sets.forEach(set => {
+                    set.formulaIds = set.formulaIds.filter(fid => fid !== id);
+                });
+                saveData();
+                renderFormulaList();
+            }
+        }
+
+        function insertSymbol(symbol) {
+            const leftInput = document.getElementById('formulaLeft');
+            const rightInput = document.getElementById('formulaRight');
+            const activeElement = document.activeElement;
+            
+            let input = leftInput;
+            if (activeElement === rightInput) {
+                input = rightInput;
+            } else if (lastFocusedInput) {
+                input = lastFocusedInput;
+            }
+            
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const value = input.value;
+            input.value = value.substring(0, start) + symbol + value.substring(end);
+            input.focus();
+            const newPos = start + symbol.length;
+            input.setSelectionRange(newPos, newPos);
+            updatePreview();
+        }
+
+        document.getElementById('formulaLeft').addEventListener('focus', function() {
+            lastFocusedInput = this;
+        });
+        document.getElementById('formulaRight').addEventListener('focus', function() {
+            lastFocusedInput = this;
+        });
+
+        function updatePreview() {
+            const left = document.getElementById('formulaLeft').value;
+            const right = document.getElementById('formulaRight').value;
+            const preview = document.getElementById('formulaPreview');
+            const fullFormula = left + ' = ' + right;
+            preview.innerHTML = renderSingleFormula(fullFormula);
+        }
+
+        document.getElementById('formulaLeft').addEventListener('input', updatePreview);
+        document.getElementById('formulaRight').addEventListener('input', updatePreview);
+
+        // 题集管理
+        function renderSetList() {
+            const list = document.getElementById('setList');
+            if (sets.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-400 py-10">暂无题集，点击右上角创建</div>';
+                return;
+            }
+            
+            list.innerHTML = sets.map(s => `
+                <div class="card fade-in">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-gray-800">${s.name}</h3>
+                            <p class="text-sm text-gray-500">${s.formulaIds.length} 个公式</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editSet(${s.id})" class="text-blue-500 text-sm" style="border:none;background:none;cursor:pointer;">编辑</button>
+                            <button onclick="deleteSet(${s.id})" class="text-red-500 text-sm" style="border:none;background:none;cursor:pointer;">删除</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCreateSet() {
+            currentEditSetId = null;
+            selectedFormulas = new Set();
+            document.getElementById('setName').value = '';
+            renderFormulaSelectList();
+            showPage('createSetPage');
+        }
+
+        function editSet(id) {
+            const set = sets.find(s => s.id === id);
+            if (!set) return;
+            
+            currentEditSetId = id;
+            selectedFormulas = new Set(set.formulaIds);
+            document.getElementById('setName').value = set.name;
+            renderFormulaSelectList();
+            showPage('createSetPage');
+        }
+
+        function renderFormulaSelectList() {
+            const list = document.getElementById('formulaSelectList');
+            list.innerHTML = formulas.map(f => `
+                <div class="card cursor-pointer ${selectedFormulas.has(f.id) ? 'ring-2' : ''}" onclick="toggleFormula(${f.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedFormulas.has(f.id) ? 'bg-blue-500 border-blue-500' : 'border-gray-300'}" style="min-width:24px;">
+                            ${selectedFormulas.has(f.id) ? '<span class="text-white text-sm">✓</span>' : ''}
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-xs px-2 py-1 rounded-full ${getCategoryClass(f.category)}">${getCategoryName(f.category)}</span>
+                            <div class="formula-display text-sm mt-1">$${f.left} = ${f.right}$</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('selectedCount').textContent = selectedFormulas.size;
+            renderMath(list);
+        }
+
+        function toggleFormula(id) {
+            if (selectedFormulas.has(id)) {
+                selectedFormulas.delete(id);
+            } else {
+                selectedFormulas.add(id);
+            }
+            renderFormulaSelectList();
+        }
+
+        function selectAllFormulas() {
+            formulas.forEach(f => selectedFormulas.add(f.id));
+            renderFormulaSelectList();
+        }
+
+        function deselectAllFormulas() {
+            selectedFormulas.clear();
+            renderFormulaSelectList();
+        }
+
+        function saveSet() {
+            const name = document.getElementById('setName').value.trim();
+            if (!name) {
+                alert('请输入题集名称');
+                return;
+            }
+            if (selectedFormulas.size === 0) {
+                alert('请至少选择一个公式');
+                return;
+            }
+
+            if (currentEditSetId) {
+                const set = sets.find(s => s.id === currentEditSetId);
+                if (set) {
+                    set.name = name;
+                    set.formulaIds = [...selectedFormulas];
+                }
+            } else {
+                const newId = Math.max(0, ...sets.map(s => s.id)) + 1;
+                sets.push({ id: newId, name, formulaIds: [...selectedFormulas] });
+            }
+
+            saveData();
+            showPage('setPage');
+        }
+
+        function deleteSet(id) {
+            if (confirm('确定要删除这个题集吗？')) {
+                sets = sets.filter(s => s.id !== id);
+                saveData();
+                renderSetList();
+            }
+        }
+
+        // 模式选择页渲染
+        function renderModeSetList(listId, mode) {
+            const list = document.getElementById(listId);
+            
+            let html = `
+                <div class="card cursor-pointer" onclick="start${mode === 'memorize' ? 'Memorize' : 'Practice'}(-1)">
+                    <div class="flex items-center gap-3">
+                        <div class="text-3xl">📚</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">全部题库</h3>
+                            <p class="text-sm text-gray-500">${formulas.length} 个公式</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            html += sets.map(s => `
+                <div class="card cursor-pointer" onclick="start${mode === 'memorize' ? 'Memorize' : 'Practice'}(${s.id})">
+                    <div class="flex items-center gap-3">
+                        <div class="text-3xl">📁</div>
+                        <div>
+                            <h3 class="font-bold text-gray-800">${s.name}</h3>
+                            <p class="text-sm text-gray-500">${s.formulaIds.length} 个公式</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            list.innerHTML = html;
+        }
+
+        // 背记模式
+        function startMemorize(setId) {
+            let targetFormulas;
+            if (setId === -1) {
+                targetFormulas = [...formulas];
+            } else {
+                const set = sets.find(s => s.id === setId);
+                if (!set || set.formulaIds.length === 0) {
+                    alert('题集为空');
+                    return;
+                }
+                targetFormulas = formulas.filter(f => set.formulaIds.includes(f.id));
+            }
+
+            memorizeState = {
+                formulas: targetFormulas,
+                queue: [],
+                current: null,
+                showingAnswer: false,
+                wrongCount: 0,
+                wrongFormulas: {},
+                totalShown: 0
+            };
+
+            for (let i = 0; i < 3; i++) {
+                memorizeState.queue.push(...targetFormulas.map(f => f.id));
+            }
+            shuffleArray(memorizeState.queue);
+
+            document.getElementById('memorizeProgress').textContent = `0/${memorizeState.queue.length}`;
+            document.getElementById('memorizeWrong').textContent = '0';
+            
+            showPage('memorizePage');
+            nextMemorizeFormula();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function nextMemorizeFormula() {
+            if (memorizeState.queue.length === 0) {
+                finishMemorize();
+                return;
+            }
+
+            const formulaId = memorizeState.queue.shift();
+            memorizeState.current = memorizeState.formulas.find(f => f.id === formulaId);
+            memorizeState.showingAnswer = false;
+            memorizeState.totalShown++;
+
+            const display = document.getElementById('memorizeFormula');
+            display.innerHTML = renderSingleFormula(memorizeState.current.left + ' = \\ ?');
+
+            document.getElementById('memorizeHint').textContent = '点击屏幕查看答案';
+            document.getElementById('memorizeButtons').classList.add('hidden');
+            document.getElementById('memorizeProgress').textContent = `${memorizeState.totalShown}/${memorizeState.totalShown + memorizeState.queue.length}`;
+        }
+
+        function handleMemorizeClick() {
+            if (memorizeState.showingAnswer) return;
+            
+            memorizeState.showingAnswer = true;
+            const display = document.getElementById('memorizeFormula');
+            display.innerHTML = renderSingleFormula(memorizeState.current.left + ' = ' + memorizeState.current.right);
+
+            document.getElementById('memorizeHint').textContent = '';
+            document.getElementById('memorizeButtons').classList.remove('hidden');
+        }
+
+        function memorizeAnswer(remembered) {
+            if (!remembered) {
+                memorizeState.wrongCount++;
+                const id = memorizeState.current.id;
+                memorizeState.wrongFormulas[id] = (memorizeState.wrongFormulas[id] || 0) + 1;
+                document.getElementById('memorizeWrong').textContent = memorizeState.wrongCount;
+            }
+            nextMemorizeFormula();
+        }
+
+        function finishMemorize() {
+            stats.sessions++;
+            saveData();
+
+            const totalFormulas = memorizeState.formulas.length;
+            const totalShown = memorizeState.totalShown;
+            const wrongCount = memorizeState.wrongCount;
+            const accuracy = totalShown > 0 ? Math.round(((totalShown - wrongCount) / totalShown) * 100) : 0;
+
+            document.getElementById('resultTotal').textContent = totalFormulas;
+            document.getElementById('resultRepeats').textContent = totalShown;
+            document.getElementById('resultWrong').textContent = wrongCount;
+            document.getElementById('resultAccuracy').textContent = accuracy + '%';
+
+            const wrongList = document.getElementById('wrongFormulas');
+            const wrongIds = Object.keys(memorizeState.wrongFormulas);
+            
+            if (wrongIds.length > 0) {
+                document.getElementById('wrongFormulasList').classList.remove('hidden');
+                wrongList.innerHTML = wrongIds.map(id => {
+                    const formula = formulas.find(f => f.id === parseInt(id));
+                    const count = memorizeState.wrongFormulas[id];
+                    return `
+                        <div class="bg-red-50 rounded-xl p-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-red-600">不记得 ${count} 次</span>
+                            </div>
+                            <div class="formula-display text-sm">$${formula.left} = ${formula.right}$</div>
+                        </div>
+                    `;
+                }).join('');
+                renderMath(wrongList);
+            } else {
+                document.getElementById('wrongFormulasList').classList.add('hidden');
+            }
+
+            showPage('memorizeResultPage');
+        }
+
+        function exitMemorize() {
+            if (confirm('确定要退出背记吗？当前进度将不会保存。')) {
+                showPage('homePage');
+            }
+        }
+
+        // 练习模式
+        function startPractice(setId) {
+            let targetFormulas;
+            if (setId === -1) {
+                targetFormulas = [...formulas];
+            } else {
+                const set = sets.find(s => s.id === setId);
+                if (!set || set.formulaIds.length === 0) {
+                    alert('题集为空');
+                    return;
+                }
+                targetFormulas = formulas.filter(f => set.formulaIds.includes(f.id));
+            }
+
+            practiceState = {
+                formulas: targetFormulas,
+                current: null,
+                showingAnswer: false,
+                count: 0
+            };
+
+            document.getElementById('practiceCount').textContent = '0';
+            showPage('practicePage');
+            nextPracticeFormula();
+        }
+
+        function nextPracticeFormula() {
+            const randomIndex = Math.floor(Math.random() * practiceState.formulas.length);
+            practiceState.current = practiceState.formulas[randomIndex];
+            practiceState.showingAnswer = false;
+            practiceState.count++;
+
+            const display = document.getElementById('practiceFormula');
+            display.innerHTML = renderSingleFormula(practiceState.current.left + ' = \\ ?');
+
+            document.getElementById('practiceHint').textContent = '点击屏幕查看答案';
+            document.getElementById('practiceCount').textContent = practiceState.count;
+        }
+
+        function handlePracticeClick() {
+            if (!practiceState.showingAnswer) {
+                practiceState.showingAnswer = true;
+                const display = document.getElementById('practiceFormula');
+                display.innerHTML = renderSingleFormula(practiceState.current.left + ' = ' + practiceState.current.right);
+                document.getElementById('practiceHint').textContent = '点击屏幕下一题';
+            } else {
+                nextPracticeFormula();
+            }
+        }
+
+        function exitPractice() {
+            showPage('homePage');
+        }
+
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "数学公式背诵助手",
+  "short_name": "公式背诵",
+  "description": "高效记忆数学公式的移动应用",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#eff6ff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='64' fill='%233b82f6'/><text x='256' y='380' font-size='300' text-anchor='middle' fill='white'>📐</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"],
+  "lang": "zh-CN"
+}
